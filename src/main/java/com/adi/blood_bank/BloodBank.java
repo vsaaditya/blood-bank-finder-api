@@ -1,6 +1,9 @@
 package com.adi.blood_bank;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,11 +18,24 @@ public class BloodBank {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+
+    @NotBlank(message = "Name cannot be empty!")
     private String name;
+
+    @NotBlank(message = "Address cannot be empty!")
     private String address;
-    private String city ;
-    private String phone;
-    private String email;
-    private Boolean active ;
+
+    @NotBlank(message = "City cannot be empty!")
+    private String city;
+
+    @NotNull(message = "Pincode cannot be null!")
     private Integer pincode;
+
+    @NotBlank(message = "Phone cannot be empty!")
+    private String phone;
+
+    @Email(message = "Invalid email format!")
+    private String email;
+
+    private Boolean active;
 }

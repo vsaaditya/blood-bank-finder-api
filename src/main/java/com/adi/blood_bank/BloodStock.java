@@ -1,6 +1,7 @@
 package com.adi.blood_bank;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class BloodStock {
 
     private Integer bloodBankId;
     private String bloodGroup;
+    @NotNull(message = "cont null or zero")
     private Integer units;
     private LocalDateTime lastUpdated;
 }
