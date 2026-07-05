@@ -2,6 +2,9 @@ package com.adi.blood_bank;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,10 +17,10 @@ public class DonerController {
     DonerService service;
 
     @GetMapping("/all")
-    public List<Doner> getAll() {
-        return service.getAll();
+    public Page<Doner> getAll(
+            @PageableDefault(size = 10, sort = "name") Pageable pageable) {
+        return service.getAll(pageable);
     }
-
     @GetMapping("/{id}")
     public Doner getById(@PathVariable Integer id) {
         return service.getById(id);

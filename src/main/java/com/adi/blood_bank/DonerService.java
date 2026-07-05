@@ -1,6 +1,8 @@
 package com.adi.blood_bank;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,8 +15,8 @@ public class DonerService {
     DonerRepository repo;
 
     // get all
-    public List<Doner> getAll() {
-        return repo.findAll();
+    public Page<Doner> getAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     // get by id

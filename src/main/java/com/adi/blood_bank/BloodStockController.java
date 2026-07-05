@@ -2,6 +2,9 @@ package com.adi.blood_bank;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,8 +17,9 @@ public class BloodStockController {
     BloodStockService service;
 
     @GetMapping("/all")
-    public List<BloodStock> getAll() {
-        return service.getAll();
+    public Page<BloodStock> getAll(
+            @PageableDefault(size = 10, sort = "bloodGroup") Pageable pageable) {
+        return service.getAll(pageable);
     }
 
     @GetMapping("/bank/{bankId}")

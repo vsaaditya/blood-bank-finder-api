@@ -2,6 +2,8 @@ package com.adi.blood_bank;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +13,8 @@ public class BloodBankService {
     @Autowired
     BloodBankRepository repo;
     //get
-    public List<BloodBank> getAll (){
-        return repo.findAll();
+    public Page<BloodBank> getAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
     //get by id
     public BloodBank getById(Integer id){
@@ -26,7 +28,7 @@ public class BloodBankService {
         List<BloodBank> existing = repo.findByCity(bb.getCity());
         for(BloodBank bank : existing){
             if(bank.getName().equalsIgnoreCase(bb.getName())){
-                return "Already exist!!";
+                return "Blood Bank with this name already exists in " + bb.getCity() + "!";
             }
         }
         repo.save(bb);
