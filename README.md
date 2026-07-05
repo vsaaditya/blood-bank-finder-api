@@ -250,11 +250,6 @@ spring.jpa.show-sql=true
 mvn spring-boot:run
 ```
 
-**5. API is live at**
-```
-http://localhost:8080
-```
-
 ---
 
 ## 👨‍💻 Author
