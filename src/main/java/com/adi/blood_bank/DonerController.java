@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class DonerController {
     @Autowired
     DonerService service;
 
+    @PreAuthorize("hasAnyRole('USER', 'DOCTOR', 'ADMIN')")
     @GetMapping("/all")
     public Page<Doner> getAll(
             @PageableDefault(size = 10, sort = "name") Pageable pageable) {
@@ -35,18 +37,19 @@ public class DonerController {
     public List<Doner> getByBloodBankId(@PathVariable Integer bankId) {
         return service.getByBloodBankId(bankId);
     }
-
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     @PostMapping("/add")
     public String addDoner(@Valid @RequestBody Doner doner) {
         return service.addDoner(doner);
     }
-
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     @PutMapping("/{id}")
     public String updateDoner(@PathVariable Integer id,
                               @RequestBody Doner doner) {
         return service.updateDoner(id, doner);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteDoner(@PathVariable Integer id) {
         return service.deleteDoner(id);

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,11 +33,13 @@ public class BloodStockController {
         return service.getByBloodGroup(type);
     }
 
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     @GetMapping("/critical")
     public List<BloodStock> getCriticalStock() {
         return service.getCriticalStock();
     }
 
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     @PostMapping("/add")
     public String addStock(@Valid @RequestBody BloodStock stock) {
         return service.addStock(stock);
@@ -48,11 +51,13 @@ public class BloodStockController {
         return service.updateUnits(id, units);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteStock(@PathVariable Integer id) {
         return service.deleteStock(id);
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'DOCTOR', 'ADMIN')")
     @GetMapping("/search")
     public List<BloodAvailabilityDTO> search(
             @RequestParam String bloodGroup,
