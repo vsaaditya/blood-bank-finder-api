@@ -62,7 +62,7 @@ public class DonerService {
         existing.setPhone(doner.getPhone());
         existing.setEmail(doner.getEmail());
         existing.setLastDonationDate(doner.getLastDonationDate());
-        existing.setBloodBankId(doner.getBloodBankId());
+        existing.setBloodBank(doner.getBloodBank());
         repo.save(existing);
         return "Donor updated successfully!";
     }

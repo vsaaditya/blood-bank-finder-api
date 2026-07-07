@@ -35,10 +35,8 @@ public class AuthService {
     public String login(User user) {
         User existing = userRepo.findByUsername(user.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found!"));
-
-        // BCrypt checks if typed password matches stored hash
         if (encoder.matches(user.getPassword(), existing.getPassword())) {
-            return jwtUtil.generateToken(existing.getUsername());
+            return jwtUtil.generateToken(existing.getUsername(), existing.getRole());
         }
         return "Invalid credentials!";
     }

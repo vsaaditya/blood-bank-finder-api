@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.Authentication;
 import java.util.List;
 
 @RestController
@@ -53,5 +53,11 @@ public class DonerController {
     @DeleteMapping("/{id}")
     public String deleteDoner(@PathVariable Integer id) {
         return service.deleteDoner(id);
+    }
+
+    @GetMapping("/whoami")
+    public String whoAmI(Authentication authentication) {
+        return "User: " + authentication.getName() +
+                " Roles: " + authentication.getAuthorities();
     }
 }

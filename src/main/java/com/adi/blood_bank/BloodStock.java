@@ -17,9 +17,12 @@ public class BloodStock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer bloodBankId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Blood_bank_id")
+    private BloodBank bloodBank;
+
     private String bloodGroup;
-    @NotNull(message = "cont null or zero")
+    @NotNull(message = "cannot null or zero")
     private Integer units;
     private LocalDateTime lastUpdated;
 }

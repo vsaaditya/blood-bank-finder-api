@@ -32,5 +32,7 @@ public class Doner {
     private String email;
 
     private LocalDate lastDonationDate;
-    private Integer bloodBankId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blood_bank_id")
+    private BloodBank bloodBank;
 }

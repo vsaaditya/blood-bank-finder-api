@@ -1,5 +1,6 @@
 package com.adi.blood_bank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,6 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -38,4 +41,12 @@ public class BloodBank {
     private String email;
 
     private Boolean active;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bloodBank", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Doner> donors;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bloodBank", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BloodStock> bloodStocks;
 }
