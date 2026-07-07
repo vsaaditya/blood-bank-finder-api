@@ -27,27 +27,54 @@ Finding blood during a medical emergency in India means calling blood bank after
 
 ## ⚙️ Tech Stack
 
-| Technology       | Purpose                  |
-|------------------|--------------------------|
-| Java 24          | Core language            |
-| Spring Boot 4.1  | Backend framework        |
-| Spring Data JPA  | Database operations      |
-| MySQL 8.0        | Data storage             |
-| Lombok           | Boilerplate-free code    |
-| Validation       | Input validation         |
-| Maven            | Dependency management    |
+| Technology          | Purpose                        |
+|---------------------|--------------------------------|
+| Java 24             | Core language                  |
+| Spring Boot 4.1     | Backend framework              |
+| Spring Data JPA     | Database operations            |
+| Spring Security 7   | Authentication & Authorization |
+| JWT                 | Stateless token authentication |
+| BCrypt              | Password encryption            |
+| MySQL 8.0           | Data storage                   |
+| Lombok              | Boilerplate-free code          |
+| Validation          | Input validation               |
+| Spring Actuator     | App monitoring & health checks |
+| Maven               | Dependency management          |
 
 ---
 
 ## ✨ Features
 
+- 🔐 **JWT Authentication** — Secure login with token-based authentication
+- 👥 **Role-Based Access Control** — ADMIN, DOCTOR, USER roles with different permissions
+- 🔒 **BCrypt Encryption** — Passwords never stored in plain text
 - 🏥 **Blood Bank Management** — Register and manage blood banks city-wise
 - 🧑 **Donor Registry** — Register donors with smart eligibility checks
 - 🩸 **Stock Tracking** — Real-time blood inventory per blood bank
 - 🔍 **Smart Search** — Find available blood by group AND city instantly
 - 🚨 **Critical Alerts** — Identify blood groups critically low (less than 2 units)
+- 🔗 **JPA Relationships** — Proper foreign key constraints between entities
+- 📄 **Pagination** — All list endpoints support page + size + sort
+- 📊 **Actuator Monitoring** — Health check and metrics endpoints
 - 🛡️ **Input Validation** — All fields validated before saving
 - 🚫 **Duplicate Prevention** — Smart checks on donors and blood banks
+
+---
+
+## 👥 Roles & Permissions
+
+| Action | ADMIN | DOCTOR | USER |
+|--------|-------|--------|------|
+| View blood banks | ✅ | ✅ | ✅ |
+| Add / Update / Delete blood bank | ✅ | ❌ | ❌ |
+| View donors | ✅ | ✅ | ✅ |
+| Add / Update donor | ✅ | ✅ | ❌ |
+| Delete donor | ✅ | ❌ | ❌ |
+| View stock | ✅ | ✅ | ✅ |
+| Add / Update stock | ✅ | ✅ | ❌ |
+| Delete stock | ✅ | ❌ | ❌ |
+| Search blood by group + city | ✅ | ✅ | ✅ |
+| Critical stock alert | ✅ | ✅ | ❌ |
 
 ---
 
@@ -57,6 +84,7 @@ This is the heart of the entire project:
 
 ```
 GET /api/stock/search?bloodGroup=O%2B&city=Patna
+Authorization: Bearer <your_token>
 ```
 
 **Sample Response:**
@@ -83,18 +111,62 @@ GET /api/stock/search?bloodGroup=O%2B&city=Patna
 
 ---
 
+## 🔐 Authentication
+
+All endpoints except `/auth/register` and `/auth/login` require a valid JWT token.
+
+**Step 1 — Register:**
+```
+POST /auth/register
+```
+```json
+{
+  "username": "hospital1",
+  "password": "pass123",
+  "role": "USER"
+}
+```
+
+**Step 2 — Login:**
+```
+POST /auth/login
+```
+```json
+{
+  "username": "hospital1",
+  "password": "pass123"
+}
+```
+→ Returns JWT token
+
+**Step 3 — Use token in every request:**
+```
+Authorization: Bearer eyJhbGci...
+```
+
+---
+
 ## 📡 API Reference
+
+### 🔓 Auth — `/auth` (Public)
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/register` | Register new user | ❌ |
+| `POST` | `/login` | Login and get JWT token | ❌ |
+
+---
 
 ### 🏥 Blood Banks — `/api/bloodbank`
 
-| Method   | Endpoint              | Description                    |
-|----------|-----------------------|--------------------------------|
-| `GET`    | `/all`                | Get all blood banks            |
-| `GET`    | `/{id}`               | Get blood bank by ID           |
-| `GET`    | `/filter?city=Patna`  | Get blood banks in a city      |
-| `POST`   | `/add`                | Register new blood bank        |
-| `PUT`    | `/{id}`               | Update blood bank details      |
-| `DELETE` | `/{id}`               | Remove blood bank              |
+| Method | Endpoint | Description | Role Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/all` | Get all blood banks (paginated) | Any |
+| `GET` | `/{id}` | Get blood bank by ID | Any |
+| `GET` | `/filter?city=Patna` | Get blood banks in a city | Any |
+| `POST` | `/add` | Register new blood bank | ADMIN |
+| `PUT` | `/{id}` | Update blood bank details | ADMIN |
+| `DELETE` | `/{id}` | Remove blood bank | ADMIN |
 
 **Sample Request Body — Add Blood Bank:**
 ```json
@@ -109,19 +181,24 @@ GET /api/stock/search?bloodGroup=O%2B&city=Patna
 }
 ```
 
+**Pagination support:**
+```
+GET /api/bloodbank/all?page=0&size=5&sort=name
+```
+
 ---
 
 ### 🧑 Donors — `/api/donors`
 
-| Method   | Endpoint                      | Description                        |
-|----------|-------------------------------|------------------------------------|
-| `GET`    | `/all`                        | Get all donors                     |
-| `GET`    | `/{id}`                       | Get donor by ID                    |
-| `GET`    | `/bloodgroup?type=O%2B`       | Get donors by blood group          |
-| `GET`    | `/bank/{bankId}`              | Get all donors of a blood bank     |
-| `POST`   | `/add`                        | Register new donor                 |
-| `PUT`    | `/{id}`                       | Update donor details               |
-| `DELETE` | `/{id}`                       | Remove donor                       |
+| Method | Endpoint | Description | Role Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/all` | Get all donors (paginated) | Any |
+| `GET` | `/{id}` | Get donor by ID | Any |
+| `GET` | `/bloodgroup?type=O%2B` | Get donors by blood group | Any |
+| `GET` | `/bank/{bankId}` | Get all donors of a blood bank | Any |
+| `POST` | `/add` | Register new donor | ADMIN / DOCTOR |
+| `PUT` | `/{id}` | Update donor details | ADMIN / DOCTOR |
+| `DELETE` | `/{id}` | Remove donor | ADMIN |
 
 **Sample Request Body — Add Donor:**
 ```json
@@ -133,7 +210,7 @@ GET /api/stock/search?bloodGroup=O%2B&city=Patna
   "phone": "9876543210",
   "email": "adi@gmail.com",
   "lastDonationDate": "2025-01-01",
-  "bloodBankId": 1
+  "bloodBank": {"id": 1}
 }
 ```
 
@@ -141,25 +218,35 @@ GET /api/stock/search?bloodGroup=O%2B&city=Patna
 
 ### 🩸 Blood Stock — `/api/stock`
 
-| Method    | Endpoint                                        | Description                        |
-|-----------|-------------------------------------------------|------------------------------------|
-| `GET`     | `/all`                                          | Get all stock entries              |
-| `GET`     | `/bank/{bankId}`                                | Get stock of a specific blood bank |
-| `GET`     | `/bloodgroup?type=O%2B`                         | Get stock by blood group           |
-| `GET`     | `/critical`                                     | 🚨 Get critically low stock        |
-| `GET`     | `/search?bloodGroup=O%2B&city=Patna`            | 🔑 Find blood by group and city    |
-| `POST`    | `/add`                                          | Add new stock entry                |
-| `PATCH`   | `/{id}/update?units=2`                          | Update stock units                 |
-| `DELETE`  | `/{id}`                                         | Remove stock entry                 |
+| Method | Endpoint | Description | Role Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/all` | Get all stock entries (paginated) | Any |
+| `GET` | `/bank/{bankId}` | Get stock of a specific blood bank | Any |
+| `GET` | `/bloodgroup?type=O%2B` | Get stock by blood group | Any |
+| `GET` | `/critical` | 🚨 Get critically low stock | ADMIN / DOCTOR |
+| `GET` | `/search?bloodGroup=O%2B&city=Patna` | 🔑 Find blood by group and city | Any |
+| `POST` | `/add` | Add new stock entry | ADMIN / DOCTOR |
+| `PATCH` | `/{id}/update?units=2` | Update stock units | ADMIN / DOCTOR |
+| `DELETE` | `/{id}` | Remove stock entry | ADMIN |
 
 **Sample Request Body — Add Stock:**
 ```json
 {
-  "bloodBankId": 1,
   "bloodGroup": "O+",
-  "units": 20
+  "units": 20,
+  "bloodBank": {"id": 1}
 }
 ```
+
+---
+
+### 📊 Monitoring — `/actuator` (Public)
+
+| Endpoint | Description |
+|----------|-------------|
+| `/actuator/health` | App + DB health status |
+| `/actuator/info` | App information |
+| `/actuator/metrics` | Performance metrics |
 
 ---
 
@@ -185,6 +272,30 @@ GET /api/stock/search?bloodGroup=O%2B&city=Patna
 ✅ All required fields validated before saving
 ```
 
+### Security Rules
+```
+✅ Passwords encrypted with BCrypt — never stored in plain text
+✅ JWT token expires after 24 hours
+✅ Role-based access enforced on every endpoint
+✅ 401 Unauthorized for missing token
+✅ 403 Forbidden for insufficient role
+```
+
+---
+
+## 🔗 Database Relationships
+
+```
+BloodBank (ONE)
+    ├── has many → Donors (MANY)         @OneToMany
+    └── has many → BloodStock (MANY)     @OneToMany
+
+Donor (MANY) → belongs to → BloodBank (ONE)      @ManyToOne
+BloodStock (MANY) → belongs to → BloodBank (ONE) @ManyToOne
+```
+
+Foreign key constraints enforced by MySQL — deleting a blood bank automatically removes all its donors and stock! ✅
+
 ---
 
 ## 📁 Project Structure
@@ -197,19 +308,29 @@ src/main/java/com/adi/blood_bank/
 ├── BloodBank.java                    — Blood Bank entity
 ├── Doner.java                        — Donor entity
 ├── BloodStock.java                   — Blood Stock entity
+├── User.java                         — User entity (auth)
 ├── BloodAvailabilityDTO.java         — Search response DTO
 │
 ├── BloodBankRepository.java          — Blood Bank DB operations
 ├── DonerRepository.java              — Donor DB operations
 ├── BloodStockRepository.java         — Blood Stock DB operations
+├── UserRepository.java               — User DB operations
 │
 ├── BloodBankService.java             — Blood Bank business logic
 ├── DonerService.java                 — Donor business logic
 ├── BloodStockService.java            — Blood Stock business logic
+├── AuthService.java                  — Register + Login logic
 │
 ├── BloodBankController.java          — Blood Bank REST endpoints
 ├── DonerController.java              — Donor REST endpoints
-└── BloodStockController.java         — Blood Stock REST endpoints
+├── BloodStockController.java         — Blood Stock REST endpoints
+├── AuthController.java               — Auth REST endpoints
+│
+├── JwtUtil.java                      — JWT token generation + validation
+├── JwtFilter.java                    — JWT request interceptor
+├── SecurityConfig.java               — Spring Security configuration
+├── CustomUserDetailsService.java     — User loading for Spring Security
+└── AppConfig.java                    — App configuration properties
 ```
 
 ---
@@ -236,18 +357,31 @@ CREATE DATABASE bloodbankdb;
 
 **3. Configure your credentials**
 
-Open `src/main/resources/application.properties` and update:
+Open `src/main/resources/application-dev.properties` and update:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/bloodbankdb
 spring.datasource.username=your_username
 spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
 ```
 
 **4. Run the application**
 ```bash
 mvn spring-boot:run
+```
+
+**5. API is live at**
+```
+http://localhost:8080
+```
+
+**6. Register your first ADMIN user**
+```
+POST http://localhost:8080/auth/register
+{
+  "username": "admin1",
+  "password": "admin123",
+  "role": "ADMIN"
+}
 ```
 
 ---
