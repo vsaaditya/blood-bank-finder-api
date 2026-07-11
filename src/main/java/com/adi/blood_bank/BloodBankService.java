@@ -63,4 +63,16 @@ public class BloodBankService {
         return "Deleted !!";
     }
 
+    public List<BloodBank> findActiveBanksByCity(String city) {
+        return repo.findByCityAndActive(city, true);
+    }
+
+    public List<BloodBank> searchByName(String keyword) {
+        return repo.findByNameContaining(keyword);
+    }
+
+    public Long countBanksInCity(String city) {
+        return repo.countBanksByCity(city);
+    }
+
 }

@@ -57,5 +57,20 @@ public class BloodBankController {
         return appConfig.getName() + " v" + appConfig.getVersion() + " by " + appConfig.getAuthor();
     }
 
+    @GetMapping("/active")
+    public List<BloodBank> getActiveBanks(@RequestParam String city) {
+        return service.findActiveBanksByCity(city);
+    }
+
+    @GetMapping("/search")
+    public List<BloodBank> searchByName(@RequestParam String keyword) {
+        return service.searchByName(keyword);
+    }
+
+    @GetMapping("/count")
+    public Long countBanks(@RequestParam String city) {
+        return service.countBanksInCity(city);
+    }
+
 }
 

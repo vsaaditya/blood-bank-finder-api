@@ -60,4 +60,25 @@ public class DonerController {
         return "User: " + authentication.getName() +
                 " Roles: " + authentication.getAuthorities();
     }
+
+    @GetMapping("/gender")
+    public List<Doner> getByGender(@RequestParam String gender) {
+        return service.getByGender(gender);
+    }
+
+    @GetMapping("/age-above")
+    public List<Doner> getOlderThan(@RequestParam Integer age) {
+        return service.getDonorsOlderThan(age);
+    }
+
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    @GetMapping("/eligible")
+    public List<Doner> getEligibleDonors() {
+        return service.getEligibleDonors();
+    }
+
+    @GetMapping("/count")
+    public Long getCount(@RequestParam String bloodGroup) {
+        return service.getCountByBloodGroup(bloodGroup);
+    }
 }

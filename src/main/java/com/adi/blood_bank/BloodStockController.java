@@ -64,4 +64,22 @@ public class BloodStockController {
             @RequestParam String city) {
         return service.searchByBloodGroupAndCity(bloodGroup, city);
     }
+
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    @GetMapping("/critical-under")
+    public List<BloodStock> getCriticalUnder(@RequestParam Integer units) {
+        return service.getCriticalStockUnder(units);
+    }
+
+    @GetMapping("/range")
+    public List<BloodStock> getStockInRange(
+            @RequestParam Integer min,
+            @RequestParam Integer max) {
+        return service.getStockInRange(min, max);
+    }
+
+    @GetMapping("/total")
+    public Long getTotalUnits(@RequestParam String bloodGroup) {
+        return service.getTotalUnitsByBloodGroup(bloodGroup);
+    }
 }

@@ -85,4 +85,21 @@ public class DonerService {
     public List<Doner> getByBloodBankId(Integer bloodBankId) {
         return repo.findByBloodBankId(bloodBankId);
     }
+
+    public List<Doner> getByGender(String gender) {
+        return repo.findByGender(gender);
+    }
+
+    public List<Doner> getDonorsOlderThan(Integer age) {
+        return repo.findByAgeGreaterThan(age);
+    }
+
+    public List<Doner> getEligibleDonors() {
+        LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
+        return repo.findDonorsEligibleToDonate(threeMonthsAgo);
+    }
+
+    public Long getCountByBloodGroup(String bloodGroup) {
+        return repo.countByBloodGroup(bloodGroup);
+    }
 }

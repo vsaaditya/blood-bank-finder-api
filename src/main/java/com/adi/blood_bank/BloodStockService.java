@@ -110,4 +110,16 @@ public class BloodStockService {
                 .filter(s -> s.getUnits() < 2)
                 .toList();
     }
+
+    public List<BloodStock> getCriticalStockUnder(Integer units) {
+        return repo.findByUnitsLessThan(units);
+    }
+
+    public List<BloodStock> getStockInRange(Integer min, Integer max) {
+        return repo.findByUnitsBetween(min, max);
+    }
+
+    public Long getTotalUnitsByBloodGroup(String bloodGroup) {
+        return repo.totalUnitsByBloodGroup(bloodGroup);
+    }
 }
