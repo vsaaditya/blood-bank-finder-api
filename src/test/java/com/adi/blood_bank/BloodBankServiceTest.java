@@ -23,12 +23,16 @@ public class BloodBankServiceTest {
 
     @Test
     public void testAddBank_DuplicateName_ShouldReject() {
-        // Arrange — setup fake data
-        BloodBank existingBank = new BloodBank(1, "Apollo Blood Bank", "Boring Road",
-                "Patna", 800001, "123456", "a@a.com", true);
+        BloodBank existingBank = new BloodBank();
+        existingBank.setId(1);
+        existingBank.setName("Apollo Blood Bank");
+        existingBank.setCity("Patna");
+        existingBank.setActive(true);
 
-        BloodBank newBank = new BloodBank(null, "Apollo Blood Bank", "New Address",
-                "Patna", 800002, "987654", "b@b.com", true);
+        BloodBank newBank = new BloodBank();
+        newBank.setName("Apollo Blood Bank");
+        newBank.setCity("Patna");
+        newBank.setActive(true);
 
         // when repo.findByCity is called, return list with existing bank
         when(repo.findByCity("Patna")).thenReturn(List.of(existingBank));
