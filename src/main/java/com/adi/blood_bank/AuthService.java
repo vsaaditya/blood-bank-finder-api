@@ -17,16 +17,11 @@ public class AuthService {
 
     // Register new user
     public String register(User user) {
-        // Check if username already exists
         if (userRepo.findByUsername(user.getUsername()).isPresent()) {
             return "Username already exists!";
         }
-        // Encrypt password before saving
         user.setPassword(encoder.encode(user.getPassword()));
-        // Set default role if not provided
-        if (user.getRole() == null || user.getRole().isBlank()) {
-            user.setRole("USER");
-        }
+        user.setRole("USER");  // Always force USER for public registration!
         userRepo.save(user);
         return "User registered successfully!";
     }
