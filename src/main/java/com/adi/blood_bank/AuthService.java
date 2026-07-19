@@ -16,12 +16,16 @@ public class AuthService {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // Register new user
-    public String register(User user) {
-        if (userRepo.findByUsername(user.getUsername()).isPresent()) {
+    public String register(RegisterRequest request) {
+        if (userRepo.findByUsername(request.getUsername()).isPresent()) {
             return "Username already exists!";
         }
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setRole("USER");  // Always force USER for public registration!
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(encoder.encode(request.getPassword()));
+        user.setRole("USER");
+
         userRepo.save(user);
         return "User registered successfully!";
     }
@@ -34,5 +38,12 @@ public class AuthService {
             return jwtUtil.generateToken(existing.getUsername(), existing.getRole());
         }
         return "Invalid credentials!";
+    }
+    public String promoteUser(Integer userId, String newRole) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+        user.setRole(newRole);
+        userRepo.save(user);
+        return "User promoted to " + newRole + " successfully!";
     }
 }
