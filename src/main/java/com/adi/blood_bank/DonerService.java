@@ -27,6 +27,7 @@ public class DonerService {
 
     // add donor
     public String addDoner(Doner doner) {
+        doner.setId(null);  // ← Force null — ignore any client-supplied id!
         // duplicate check — all 3 must match
         if(repo.findByNameAndPhoneAndBloodGroup(
                 doner.getName(),

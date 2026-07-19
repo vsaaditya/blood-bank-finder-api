@@ -22,6 +22,7 @@ public class BloodBankService {
     }
     //add blood bank
     public String addBank(BloodBank bb){
+        bb.setId(null);  // ← Force null — ignore any client-supplied id!
         if(bb.getName()==null || bb.getName().isBlank()){
             return "name should not empty";
         }

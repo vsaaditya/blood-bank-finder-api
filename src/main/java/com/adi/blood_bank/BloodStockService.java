@@ -66,6 +66,7 @@ public class BloodStockService {
 
     // add stock
     public String addStock(BloodStock stock) {
+        stock.setId(null);  // ← Force null — ignore any client-supplied id!
         if (stock.getUnits() < 0) {
             return "Units cannot be negative!";
         }
